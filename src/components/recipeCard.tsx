@@ -1,19 +1,15 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/3V7oS9IJua5
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
+"use client";
+
+import { useState } from "react";
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Define the Recipe type based on your backend model
 interface Recipe {
   id: string;
   title: string;
@@ -29,50 +25,67 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ recipe }: RecipeCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Split ingredients and instructions by either pipe or newline
+  const ingredientsList = recipe.ingredients
+    .split(/[|\n]/)
+    .filter((item) => item.trim());
+  const instructionsList = recipe.instructions
+    .split(/[|\n]/)
+    .filter((item) => item.trim());
+
+  console.log("Rendering RecipeCard with recipe:", recipe);
+
   return (
-    <Card className="flex items-start p-4 mx-auto max-w-[600px]">
-      <div className="flex">
-        <img
-          src="/placeholder.svg"
-          alt="Recipe"
-          className="w-[150px] h-[150px] object-cover rounded-md"
-          width="150"
-          height="150"
-          style={{ aspectRatio: "150/150", objectFit: "cover" }}
-        />
-        <div className="flex flex-col justify-between ml-4 flex-1">
-          <CardHeader>
-            <CardTitle>{recipe.title}</CardTitle>
-            <CardDescription>
-              Cooking Time: {recipe.cookingTime} mins | Servings:{" "}
-              {recipe.servings}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm font-medium">
-              <p>Ingredients:</p>
-              <ul className="list-disc list-inside">
-                {recipe.ingredients.split("\n").map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="text-sm font-medium">
-              <p>Instructions:</p>
-              <ol className="list-decimal list-inside">
-                {recipe.instructions.split("\n").map((step, index) => (
-                  <li key={index}>{step}</li>
-                ))}
-              </ol>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="px-4 py-2 text-sm font-semibold rounded-md">
-              View Recipe
-            </Button>
-          </CardFooter>
-        </div>
-      </div>
+    <Card
+      className={`w-full max-w-sm mx-auto transition-all duration-300 ease-in-out ${
+        isExpanded ? "max-w-2xl" : ""
+      }`}
+    >
+      <img
+        src="https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        alt={recipe.title}
+        width={400}
+        height={200}
+        className="w-full h-48 object-cover rounded-t-xl"
+      />
+      <CardHeader>
+        <CardTitle>{recipe.title}</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Cooking Time: {recipe.cookingTime} mins
+        </p>
+      </CardHeader>
+      {isExpanded && (
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-semibold mb-2">Ingredients:</h3>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              {ingredientsList.map((item, index) => (
+                <li key={index} className="pl-2">
+                  {item.trim()}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-2">Instructions:</h3>
+            <ol className="list-decimal list-outside text-sm space-y-2 ml-4">
+              {instructionsList.map((step, index) => (
+                <li key={index} className="pl-2">
+                  {step.trim()}
+                </li>
+              ))}
+            </ol>
+          </div>
+          <p className="text-sm">Servings: {recipe.servings}</p>
+        </CardContent>
+      )}
+      <CardFooter>
+        <Button onClick={() => setIsExpanded(!isExpanded)} className="w-full">
+          {isExpanded ? "Hide Full Recipe" : "Show Full Recipe"}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
