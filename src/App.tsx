@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import "./App.css";
 import RecipeCard from "./components/recipeCard";
+import "./index.css";
 
 // Define the Recipe type based on your backend model
 interface Recipe {
